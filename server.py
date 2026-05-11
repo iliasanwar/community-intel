@@ -17,11 +17,49 @@ try:
 except ImportError:
     pass
 
+import secrets
 import uvicorn
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Query, UploadFile, File
-from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Query, UploadFile, File, Request, Response
+from fastapi.responses import JSONResponse, StreamingResponse, FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+
+# ── Auth ──────────────────────────────────────────────────────────────────────
+
+APP_PASSWORD = os.environ.get("APP_PASSWORD", "Pleasedonothackthis")
+COOKIE_NAME  = "ci_session"
+# All valid session tokens (in-memory; cleared on restart — just re-login)
+_sessions: set[str] = set()
+
+def _check_auth(request: Request) -> bool:
+    return request.cookies.get(COOKIE_NAME) in _sessions
+
+LOGIN_HTML = """<!DOCTYPE html>
+<html>
+<head>
+  <title>Community Intelligence — Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center">
+  <div class="bg-slate-800 border border-slate-700 rounded-2xl p-10 w-full max-w-sm shadow-2xl">
+    <div class="flex items-center gap-3 mb-8">
+      <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold">CI</div>
+      <span class="text-white font-semibold text-lg">Community Intelligence</span>
+    </div>
+    <form method="post" action="/auth/login">
+      <label class="block text-slate-400 text-sm mb-2">Password</label>
+      <input name="password" type="password" autofocus
+        class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-4 py-2.5 mb-4 focus:outline-none focus:border-indigo-500"
+        placeholder="Enter password" />
+      {error}
+      <button type="submit"
+        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg transition">
+        Sign in
+      </button>
+    </form>
+  </div>
+</body>
+</html>"""
 
 from app.db import init_db, get_conn, get_stats
 from app.ingest import ingest_all, DATA_DIR
@@ -33,6 +71,51 @@ app = FastAPI(title="Community Intelligence Platform", version="1.0.0")
 STATIC_DIR = Path(__file__).parent / "static"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 init_db()
+
+
+# ── Auth routes ───────────────────────────────────────────────────────────────
+
+@app.get("/auth/login", response_class=HTMLResponse, include_in_schema=False)
+def login_page():
+    return LOGIN_HTML.format(error="")
+
+@app.post("/auth/login", response_class=HTMLResponse, include_in_schema=False)
+async def do_login(request: Request):
+    form = await request.form()
+    if form.get("password") == APP_PASSWORD:
+        token = secrets.token_hex(32)
+        _sessions.add(token)
+        resp = RedirectResponse("/", status_code=303)
+        resp.set_cookie(COOKIE_NAME, token, httponly=True, samesite="lax", max_age=60*60*24*30)
+        return resp
+    return HTMLResponse(LOGIN_HTML.format(
+        error='<p class="text-red-400 text-sm mb-3">Wrong password, try again.</p>'
+    ))
+
+@app.get("/auth/logout", include_in_schema=False)
+def logout(request: Request):
+    token = request.cookies.get(COOKIE_NAME)
+    _sessions.discard(token)
+    resp = RedirectResponse("/auth/login", status_code=303)
+    resp.delete_cookie(COOKIE_NAME)
+    return resp
+
+
+# ── Auth middleware (protects everything except /auth/*) ──────────────────────
+
+from starlette.middleware.base import BaseHTTPMiddleware
+
+class AuthMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        path = request.url.path
+        if path.startswith("/auth/"):
+            return await call_next(request)
+        if not _check_auth(request):
+            return RedirectResponse("/auth/login")
+        return await call_next(request)
+
+app.add_middleware(AuthMiddleware)
+
 
 # ── Ingest state (in-memory progress tracker) ─────────────────────────────────
 
