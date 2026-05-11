@@ -339,8 +339,12 @@ def export_csv(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    FIELDS = ["name", "email", "company", "title", "member_type",
-              "location", "linkedin", "twitter", "website", "event_count", "tags"]
+    FIELDS = [
+        "name", "email", "phone", "company", "title", "member_type",
+        "industry", "funding_stage", "location", "city", "country",
+        "linkedin", "twitter", "instagram", "facebook", "tiktok", "youtube",
+        "website", "bio", "notes", "event_count", "tags"
+    ]
 
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=FIELDS, extrasaction="ignore")

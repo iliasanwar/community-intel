@@ -541,18 +541,27 @@ async function openMember(id) {
     ${m.bio ? `<p class="text-[13px] text-[#374151] mb-5 leading-relaxed">${esc(m.bio)}</p>` : ''}
     <div class="grid grid-cols-2 gap-2 mb-5">
       ${field('Email', m.email ? `<a href="mailto:${m.email}" class="text-[#1d1d1f] hover:underline">${esc(m.email)}</a>` : null)}
-      ${field('Location', m.location)}
+      ${field('Phone', m.phone ? `<a href="tel:${m.phone}" class="text-[#1d1d1f] hover:underline">${esc(m.phone)}</a>` : null)}
       ${field('Company', m.company)}
       ${field('Title', m.title)}
+      ${field('Industry', m.industry)}
+      ${field('Funding Stage', m.funding_stage)}
+      ${field('Location', m.location || [m.city, m.country].filter(Boolean).join(', ') || null)}
       ${field('LinkedIn', m.linkedin ? `<a href="${m.linkedin}" target="_blank" class="text-[#2563eb] hover:underline">View profile →</a>` : null)}
       ${field('Twitter', m.twitter ? `<a href="https://twitter.com/${m.twitter.replace('@','')}" target="_blank" class="text-[#0ea5e9] hover:underline">@${m.twitter.replace('@','')}</a>` : null)}
+      ${field('Instagram', m.instagram ? `<a href="https://instagram.com/${m.instagram.replace('@','')}" target="_blank" class="text-[#e1306c] hover:underline">@${m.instagram.replace('@','')}</a>` : null)}
+      ${field('TikTok', m.tiktok ? `<a href="https://tiktok.com/@${m.tiktok.replace('@','')}" target="_blank" class="text-[#1d1d1f] hover:underline">@${m.tiktok.replace('@','')}</a>` : null)}
+      ${field('Facebook', m.facebook ? `<a href="${m.facebook.startsWith('http') ? m.facebook : 'https://facebook.com/'+m.facebook}" target="_blank" class="text-[#1877f2] hover:underline">${esc(m.facebook)}</a>` : null)}
+      ${field('YouTube', m.youtube ? `<a href="${m.youtube.startsWith('http') ? m.youtube : 'https://youtube.com/'+m.youtube}" target="_blank" class="text-[#ff0000] hover:underline">${esc(m.youtube)}</a>` : null)}
       ${field('Website', m.website ? `<a href="${m.website}" target="_blank" class="text-[#1d1d1f] hover:underline truncate block">${esc(m.website)}</a>` : null)}
     </div>
+    ${m.notes ? `<div class="mb-5"><p class="text-[11px] text-[#9ca3af] mb-1.5 uppercase tracking-widest font-semibold">Notes</p><p class="text-[13px] text-[#374151] leading-relaxed">${esc(m.notes)}</p></div>` : ''}
     ${(m.tags||[]).length ? `
     <div class="mb-5">
       <p class="text-[11px] text-[#9ca3af] mb-2 uppercase tracking-widest font-semibold">Tags</p>
       <div class="flex flex-wrap gap-1.5">${(m.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
     </div>` : ''}
+    ${(()=>{ try { const ef = typeof m.extra_fields === 'string' ? JSON.parse(m.extra_fields||'{}') : (m.extra_fields||{}); const entries = Object.entries(ef).filter(([,v])=>v); if(!entries.length) return ''; return `<div class="mb-5"><p class="text-[11px] text-[#9ca3af] mb-2 uppercase tracking-widest font-semibold">Additional Fields</p><div class="grid grid-cols-2 gap-2">${entries.map(([k,v])=>field(k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()), esc(String(v)))).join('')}</div></div>`; } catch(e){ return ''; } })()}
     ${(m.events||[]).length ? `
     <div>
       <p class="text-[11px] text-[#9ca3af] mb-2 uppercase tracking-widest font-semibold">Events attended</p>

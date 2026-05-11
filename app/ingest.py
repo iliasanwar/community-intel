@@ -63,8 +63,11 @@ def _read_csv(path: Path) -> tuple[list[str], list[dict]]:
 # ── Column mapping via Claude ─────────────────────────────────────────────────
 
 CANONICAL = (
-    "name first_name last_name email company title linkedin twitter "
-    "website phone location city country bio event_name event_date tags notes"
+    "name first_name last_name email company title "
+    "linkedin twitter instagram facebook tiktok youtube "
+    "website phone location city country "
+    "bio industry funding_stage notes "
+    "event_name event_date tags"
 ).split()
 
 # Heuristic keyword → canonical field (used as fallback when Claude unavailable)
@@ -76,13 +79,19 @@ _HEURISTIC: list[tuple[re.Pattern, str]] = [
     (re.compile(r"\bcompany\b|\borganization\b|\borganisation\b|\bemployer\b|\bfirm\b|\bwork.?place\b", re.I), "company"),
     (re.compile(r"\btitle\b|\bjob.?title\b|\brole\b|\bposition\b|\bdesignation\b|\boccupation\b", re.I), "title"),
     (re.compile(r"\blinkedin\b", re.I), "linkedin"),
-    (re.compile(r"\btwitter\b|\bx\.com\b|\bhandle\b", re.I), "twitter"),
+    (re.compile(r"\btwitter\b|\bx\.com\b|\bx handle\b", re.I), "twitter"),
+    (re.compile(r"\binstagram\b|\big\b|\big handle\b", re.I), "instagram"),
+    (re.compile(r"\bfacebook\b|\bfb\b", re.I), "facebook"),
+    (re.compile(r"\btiktok\b|\btik.?tok\b", re.I), "tiktok"),
+    (re.compile(r"\byoutube\b|\byt\b|\byoutube channel\b", re.I), "youtube"),
     (re.compile(r"\bwebsite\b|\burl\b|\bweb\b|\bhomepage\b", re.I), "website"),
-    (re.compile(r"\bphone\b|\bmobile\b|\bcell\b|\btelephone\b", re.I), "phone"),
+    (re.compile(r"\bphone\b|\bmobile\b|\bcell\b|\btelephone\b|\btel\b", re.I), "phone"),
     (re.compile(r"\blocation\b|\baddress\b|\bregion\b", re.I), "location"),
     (re.compile(r"\bcity\b|\btown\b", re.I), "city"),
     (re.compile(r"\bcountry\b|\bnation\b", re.I), "country"),
     (re.compile(r"\bbio\b|\babout\b|\bdescription\b|\bintro\b|\bsummary\b", re.I), "bio"),
+    (re.compile(r"\bindustry\b|\bsector\b|\bvertical\b", re.I), "industry"),
+    (re.compile(r"\bfunding.?stage\b|\bstage\b|\bround\b|\bseries\b", re.I), "funding_stage"),
     (re.compile(r"\bevent.?name\b|\bevent\b|\bsession\b", re.I), "event_name"),
     (re.compile(r"\bevent.?date\b|\bdate\b|\bregistered\b", re.I), "event_date"),
     (re.compile(r"\btags?\b|\binterests?\b|\bcategory\b|\bcategories\b", re.I), "tags"),
@@ -152,10 +161,18 @@ Example: [{{"First Name": "first_name", "E-mail": "email", "Job Title": "title"}
 # ── Row normalisation ─────────────────────────────────────────────────────────
 
 def _apply_mapping(row: dict, mapping: dict) -> dict:
-    """Apply column mapping to a raw CSV row, returning a normalised member dict."""
+    """Apply column mapping to a raw CSV row, returning a normalised member dict.
+    Columns not mapped to a canonical field are stored in extra_fields."""
     out: dict = {}
+    extra_fields: dict = {}
+    mapped_orig_cols = set(mapping.keys())
+
     for orig_col, canonical in mapping.items():
         if not canonical or canonical not in CANONICAL:
+            # Not a recognised canonical field — save as extra
+            val = row.get(orig_col, "").strip()
+            if val:
+                extra_fields[orig_col] = val
             continue
         val = row.get(orig_col, "").strip()
         if not val:
@@ -163,6 +180,16 @@ def _apply_mapping(row: dict, mapping: dict) -> dict:
         if canonical in out and len(out[canonical]) >= len(val):
             continue
         out[canonical] = val
+
+    # Any column not mentioned in the mapping at all → also save as extra
+    for col, val in row.items():
+        if col not in mapped_orig_cols:
+            val = str(val).strip() if val else ""
+            if val:
+                extra_fields[col] = val
+
+    if extra_fields:
+        out["extra_fields"] = extra_fields
 
     # Combine first_name + last_name → name
     if "name" not in out:
@@ -182,10 +209,8 @@ def _apply_mapping(row: dict, mapping: dict) -> dict:
     if "linkedin" in out:
         li = out["linkedin"].strip()
         if li.startswith("http"):
-            # Already a full URL — ensure https
             out["linkedin"] = li.replace("http://", "https://")
         elif li:
-            # Strip any linkedin.com/in/ prefix the value may already contain
             li = re.sub(r"^(www\.)?linkedin\.com/in/", "", li, flags=re.I)
             handle = li.lstrip("@").strip("/")
             out["linkedin"] = f"https://linkedin.com/in/{handle}" if handle else ""
