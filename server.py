@@ -37,23 +37,32 @@ def _check_auth(request: Request) -> bool:
 LOGIN_HTML = """<!DOCTYPE html>
 <html>
 <head>
-  <title>Community Intelligence — Login</title>
+  <title>Rosturr</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {{ -webkit-font-smoothing: antialiased; }}
+    body {{ font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; }}
+    input:focus {{ outline: none; border-color: #1d1d1f !important; box-shadow: 0 0 0 3px rgba(29,29,31,.08); }}
+  </style>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center">
-  <div class="bg-slate-800 border border-slate-700 rounded-2xl p-10 w-full max-w-sm shadow-2xl">
-    <div class="flex items-center gap-3 mb-8">
-      <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold">CI</div>
-      <span class="text-white font-semibold text-lg">Community Intelligence</span>
+<body class="bg-[#f5f5f7] min-h-screen flex items-center justify-center">
+  <div class="bg-white border border-[#e5e7eb] rounded-2xl p-10 w-full max-w-sm shadow-sm">
+    <div class="flex items-center gap-2.5 mb-8">
+      <div class="w-8 h-8 rounded-lg bg-black flex items-center justify-center shrink-0">
+        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg>
+      </div>
+      <span class="text-[#1d1d1f] font-semibold text-[17px] tracking-tight">Rosturr</span>
     </div>
     <form method="post" action="/auth/login">
-      <label class="block text-slate-400 text-sm mb-2">Password</label>
+      <label class="block text-[#6b7280] text-[12px] font-medium mb-1.5 uppercase tracking-wider">Password</label>
       <input name="password" type="password" autofocus
-        class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-4 py-2.5 mb-4 focus:outline-none focus:border-indigo-500"
+        class="w-full bg-[#f9fafb] border border-[#e5e7eb] text-[#1d1d1f] rounded-xl px-4 py-2.5 mb-3 text-[14px] transition-all"
         placeholder="Enter password" />
       {error}
       <button type="submit"
-        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-lg transition">
+        class="w-full bg-[#1d1d1f] hover:bg-[#3a3a3c] text-white font-medium py-2.5 rounded-xl text-[14px] transition-colors">
         Sign in
       </button>
     </form>
@@ -89,7 +98,7 @@ async def do_login(request: Request):
         resp.set_cookie(COOKIE_NAME, token, httponly=True, samesite="lax", max_age=60*60*24*30)
         return resp
     return HTMLResponse(LOGIN_HTML.format(
-        error='<p class="text-red-400 text-sm mb-3">Wrong password, try again.</p>'
+        error='<p class="text-red-500 text-[12px] mb-3">Incorrect password, please try again.</p>'
     ))
 
 @app.get("/auth/logout", include_in_schema=False)

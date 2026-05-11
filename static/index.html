@@ -3,72 +3,111 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Community Intelligence</title>
+  <title>Rosturr</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --founder:  #3b82f6;
-      --investor: #10b981;
-      --creator:  #8b5cf6;
-      --operator: #f59e0b;
-      --other:    #6b7280;
-      --unknown:  #374151;
-    }
-    body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; }
-    .badge-founder  { background: #1d4ed820; color: #60a5fa; border: 1px solid #1d4ed840; }
-    .badge-investor { background: #05966920; color: #34d399; border: 1px solid #05966940; }
-    .badge-creator  { background: #6d28d920; color: #a78bfa; border: 1px solid #6d28d940; }
-    .badge-operator { background: #b4530820; color: #fbbf24; border: 1px solid #b4530840; }
-    .badge-other    { background: #37415120; color: #9ca3af; border: 1px solid #37415140; }
-    .badge-unknown  { background: #1e293b;   color: #64748b; border: 1px solid #33415540; }
-    .card { background: #1e293b; border: 1px solid #334155; transition: border-color .15s, transform .1s; }
-    .card:hover { border-color: #475569; transform: translateY(-1px); }
-    .tag { background: #0f172a; border: 1px solid #334155; color: #94a3b8; font-size: 11px; padding: 1px 7px; border-radius: 99px; }
-    .search-box { background: #1e293b; border: 1px solid #334155; color: #e2e8f0; }
-    .search-box:focus { border-color: #6366f1; outline: none; box-shadow: 0 0 0 3px #6366f120; }
-    .btn-primary { background: #6366f1; color: white; transition: background .15s; }
-    .btn-primary:hover { background: #4f46e5; }
-    .btn-ghost { background: transparent; border: 1px solid #334155; color: #94a3b8; transition: all .15s; }
-    .btn-ghost:hover { border-color: #6366f1; color: #e2e8f0; }
-    .filter-chip { background: #1e293b; border: 1px solid #334155; color: #94a3b8; cursor: pointer; transition: all .15s; }
-    .filter-chip.active { background: #312e8120; border-color: #6366f1; color: #a5b4fc; }
-    .sidebar { background: #1a2438; border-right: 1px solid #1e293b; }
-    .modal-bg { background: rgba(0,0,0,.75); backdrop-filter: blur(4px); }
-    .modal { background: #1e293b; border: 1px solid #334155; }
-    .progress-bar { background: #6366f1; transition: width .3s ease; }
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body { background: #f5f5f7; color: #1d1d1f; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif; }
+
+    /* Badges */
+    .badge-founder  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .badge-investor { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-creator  { background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+    .badge-operator { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .badge-other    { background: #f9fafb; color: #374151; border: 1px solid #e5e7eb; }
+    .badge-unknown  { background: #f9fafb; color: #9ca3af; border: 1px solid #f3f4f6; }
+
+    /* Cards */
+    .card { background: #ffffff; border: 1px solid #e5e7eb; transition: box-shadow .18s, border-color .18s; }
+    .card:hover { border-color: #d1d5db; box-shadow: 0 4px 16px rgba(0,0,0,.07); }
+
+    /* Tags */
+    .tag { background: #f3f4f6; border: none; color: #6b7280; font-size: 11px; padding: 2px 8px; border-radius: 99px; }
+
+    /* Search */
+    .search-box { background: #fff; border: 1px solid #d1d5db; color: #1d1d1f; }
+    .search-box:focus { border-color: #1d1d1f; outline: none; box-shadow: 0 0 0 3px rgba(29,29,31,.08); }
+
+    /* Buttons */
+    .btn-primary { background: #1d1d1f; color: #fff; transition: background .15s, box-shadow .15s; }
+    .btn-primary:hover { background: #3a3a3c; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+    .btn-ghost { background: #fff; border: 1px solid #d1d5db; color: #374151; transition: all .15s; }
+    .btn-ghost:hover { border-color: #9ca3af; background: #f9fafb; }
+
+    /* Filter chips */
+    .filter-chip { background: transparent; border: none; color: #6b7280; cursor: pointer; transition: all .15s; border-radius: 8px; }
+    .filter-chip:hover { background: #f3f4f6; color: #1d1d1f; }
+    .filter-chip.active { background: #1d1d1f; color: #fff; }
+    .filter-chip.active .chip-count { color: rgba(255,255,255,.6); }
+
+    /* Sidebar */
+    .sidebar { background: #fff; border-right: 1px solid #e5e7eb; }
+
+    /* Header */
+    .header { background: rgba(255,255,255,.85); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid #e5e7eb; }
+
+    /* Modal */
+    .modal-bg { background: rgba(0,0,0,.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .modal { background: #fff; border: 1px solid #e5e7eb; box-shadow: 0 24px 64px rgba(0,0,0,.12); }
+
+    /* Progress */
+    .progress-track { background: #f3f4f6; }
+    .progress-bar { background: #1d1d1f; transition: width .3s ease; }
+
+    /* Dots */
     .dot-founder  { background: #3b82f6; }
-    .dot-investor { background: #10b981; }
-    .dot-creator  { background: #8b5cf6; }
+    .dot-investor { background: #22c55e; }
+    .dot-creator  { background: #a855f7; }
     .dot-operator { background: #f59e0b; }
-    .dot-other    { background: #6b7280; }
-    .dot-unknown  { background: #374151; }
-    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    .dot-other    { background: #9ca3af; }
+    .dot-unknown  { background: #d1d5db; }
+
+    /* Sort select */
+    .sort-select { background: #fff; border: 1px solid #d1d5db; color: #374151; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+    /* Animations */
     @keyframes spin { to { transform: rotate(360deg); } }
-    .spinner { animation: spin 1s linear infinite; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-    .fade-in { animation: fadeIn .25s ease forwards; }
+    .spinner { animation: spin .8s linear infinite; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeIn .2s ease forwards; }
+
+    /* Upload drop zone */
+    .drop-zone { border: 2px dashed #d1d5db; transition: all .2s; }
+    .drop-zone.drag-over { border-color: #1d1d1f; background: #f9fafb; }
+
+    /* Field boxes */
+    .field-box { background: #f9fafb; border: 1px solid #f3f4f6; border-radius: 10px; padding: 10px 12px; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
 <!-- ── Header ─────────────────────────────────────────────────────────────── -->
-<header class="border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
+<header class="header sticky top-0 z-30 px-6 py-3.5 flex items-center justify-between shrink-0">
   <div class="flex items-center gap-3">
-    <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">CI</div>
-    <span class="font-semibold text-white">Community Intelligence</span>
-    <span class="text-xs text-slate-500 border border-slate-700 px-2 py-0.5 rounded-full">Beta</span>
+    <div class="w-7 h-7 rounded-lg bg-black flex items-center justify-center shrink-0">
+      <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z"/></svg>
+    </div>
+    <span class="font-semibold text-[#1d1d1f] tracking-tight text-base">Rosturr</span>
   </div>
-  <div class="flex items-center gap-3">
-    <div id="stats-bar" class="flex gap-4 text-sm text-slate-400"></div>
-    <button onclick="openIngestModal()" class="btn-ghost text-sm px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-      Import CSVs
+  <div class="flex items-center gap-2">
+    <div id="stats-bar" class="hidden sm:flex gap-4 text-[13px] text-[#6b7280] mr-2"></div>
+    <button onclick="openIngestModal()" class="btn-ghost text-[13px] px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+      Import
     </button>
-    <button onclick="exportCSV()" class="btn-ghost text-sm px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+    <button onclick="exportCSV()" class="btn-ghost text-[13px] px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
       Export
     </button>
+    <a href="/auth/logout" class="btn-ghost text-[13px] px-3 py-1.5 rounded-lg font-medium text-[#9ca3af] hover:text-[#374151]">Sign out</a>
   </div>
 </header>
 
@@ -76,98 +115,106 @@
 <div class="flex flex-1 overflow-hidden">
 
   <!-- Sidebar -->
-  <aside class="sidebar w-56 shrink-0 overflow-y-auto p-4 flex flex-col gap-5">
-    <!-- Type filter -->
+  <aside class="sidebar w-52 shrink-0 overflow-y-auto py-5 px-3 flex flex-col gap-6">
+
+    <!-- Member Type -->
     <div>
-      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Member Type</p>
-      <div class="flex flex-col gap-1">
-        <button class="filter-chip active text-left px-3 py-1.5 rounded-lg text-sm flex items-center gap-2" data-type="all" onclick="setType(this)">
-          <span class="w-2 h-2 rounded-full bg-slate-400"></span> All members
-          <span id="count-all" class="ml-auto text-xs text-slate-500"></span>
+      <p class="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-widest mb-2 px-2">Type</p>
+      <div class="flex flex-col gap-0.5">
+        <button class="filter-chip active text-left px-2.5 py-1.5 text-[13px] flex items-center gap-2" data-type="all" onclick="setType(this)">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#9ca3af]"></span>
+          All members
+          <span id="count-all" class="chip-count ml-auto text-[11px] text-[#9ca3af]"></span>
         </button>
-        <button class="filter-chip text-left px-3 py-1.5 rounded-lg text-sm flex items-center gap-2" data-type="founder" onclick="setType(this)">
-          <span class="w-2 h-2 rounded-full dot-founder"></span> Founders
-          <span id="count-founder" class="ml-auto text-xs text-slate-500"></span>
+        <button class="filter-chip text-left px-2.5 py-1.5 text-[13px] flex items-center gap-2" data-type="founder" onclick="setType(this)">
+          <span class="w-1.5 h-1.5 rounded-full dot-founder"></span>
+          Founders
+          <span id="count-founder" class="chip-count ml-auto text-[11px] text-[#9ca3af]"></span>
         </button>
-        <button class="filter-chip text-left px-3 py-1.5 rounded-lg text-sm flex items-center gap-2" data-type="investor" onclick="setType(this)">
-          <span class="w-2 h-2 rounded-full dot-investor"></span> Investors
-          <span id="count-investor" class="ml-auto text-xs text-slate-500"></span>
+        <button class="filter-chip text-left px-2.5 py-1.5 text-[13px] flex items-center gap-2" data-type="investor" onclick="setType(this)">
+          <span class="w-1.5 h-1.5 rounded-full dot-investor"></span>
+          Investors
+          <span id="count-investor" class="chip-count ml-auto text-[11px] text-[#9ca3af]"></span>
         </button>
-        <button class="filter-chip text-left px-3 py-1.5 rounded-lg text-sm flex items-center gap-2" data-type="creator" onclick="setType(this)">
-          <span class="w-2 h-2 rounded-full dot-creator"></span> Creators
-          <span id="count-creator" class="ml-auto text-xs text-slate-500"></span>
+        <button class="filter-chip text-left px-2.5 py-1.5 text-[13px] flex items-center gap-2" data-type="creator" onclick="setType(this)">
+          <span class="w-1.5 h-1.5 rounded-full dot-creator"></span>
+          Creators
+          <span id="count-creator" class="chip-count ml-auto text-[11px] text-[#9ca3af]"></span>
         </button>
-        <button class="filter-chip text-left px-3 py-1.5 rounded-lg text-sm flex items-center gap-2" data-type="operator" onclick="setType(this)">
-          <span class="w-2 h-2 rounded-full dot-operator"></span> Operators
-          <span id="count-operator" class="ml-auto text-xs text-slate-500"></span>
+        <button class="filter-chip text-left px-2.5 py-1.5 text-[13px] flex items-center gap-2" data-type="operator" onclick="setType(this)">
+          <span class="w-1.5 h-1.5 rounded-full dot-operator"></span>
+          Operators
+          <span id="count-operator" class="chip-count ml-auto text-[11px] text-[#9ca3af]"></span>
         </button>
-        <button class="filter-chip text-left px-3 py-1.5 rounded-lg text-sm flex items-center gap-2" data-type="other" onclick="setType(this)">
-          <span class="w-2 h-2 rounded-full dot-other"></span> Other
-          <span id="count-other" class="ml-auto text-xs text-slate-500"></span>
+        <button class="filter-chip text-left px-2.5 py-1.5 text-[13px] flex items-center gap-2" data-type="other" onclick="setType(this)">
+          <span class="w-1.5 h-1.5 rounded-full dot-other"></span>
+          Other
+          <span id="count-other" class="chip-count ml-auto text-[11px] text-[#9ca3af]"></span>
         </button>
       </div>
     </div>
 
-    <!-- Event count filter -->
+    <!-- Event Attendance -->
     <div>
-      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Event Attendance</p>
-      <div class="flex flex-col gap-1">
-        <button class="filter-chip active text-left px-3 py-1.5 rounded-lg text-sm" data-events="0" onclick="setEvents(this)">Any attendance</button>
-        <button class="filter-chip text-left px-3 py-1.5 rounded-lg text-sm" data-events="2" onclick="setEvents(this)">2+ events</button>
-        <button class="filter-chip text-left px-3 py-1.5 rounded-lg text-sm" data-events="3" onclick="setEvents(this)">3+ events</button>
-        <button class="filter-chip text-left px-3 py-1.5 rounded-lg text-sm" data-events="5" onclick="setEvents(this)">5+ events</button>
+      <p class="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-widest mb-2 px-2">Attendance</p>
+      <div class="flex flex-col gap-0.5">
+        <button class="filter-chip active text-left px-2.5 py-1.5 text-[13px]" data-events="0" onclick="setEvents(this)">Any</button>
+        <button class="filter-chip text-left px-2.5 py-1.5 text-[13px]" data-events="2" onclick="setEvents(this)">2+ events</button>
+        <button class="filter-chip text-left px-2.5 py-1.5 text-[13px]" data-events="3" onclick="setEvents(this)">3+ events</button>
+        <button class="filter-chip text-left px-2.5 py-1.5 text-[13px]" data-events="5" onclick="setEvents(this)">5+ events</button>
       </div>
     </div>
 
-    <!-- Contact info filter -->
+    <!-- Contact -->
     <div>
-      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Contact</p>
-      <div class="flex flex-col gap-1">
-        <button class="filter-chip text-left px-3 py-1.5 rounded-lg text-sm" id="btn-has-email" onclick="toggleEmail()">Has email</button>
-        <button class="filter-chip text-left px-3 py-1.5 rounded-lg text-sm" id="btn-has-linkedin" onclick="toggleLinkedin()">Has LinkedIn</button>
+      <p class="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-widest mb-2 px-2">Contact</p>
+      <div class="flex flex-col gap-0.5">
+        <button class="filter-chip text-left px-2.5 py-1.5 text-[13px]" id="btn-has-email" onclick="toggleEmail()">Has email</button>
+        <button class="filter-chip text-left px-2.5 py-1.5 text-[13px]" id="btn-has-linkedin" onclick="toggleLinkedin()">Has LinkedIn</button>
       </div>
     </div>
 
-    <!-- Top tags -->
+    <!-- Tags -->
     <div>
-      <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Top Tags</p>
-      <div id="tag-filters" class="flex flex-wrap gap-1"></div>
+      <p class="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-widest mb-2 px-2">Tags</p>
+      <div id="tag-filters" class="flex flex-wrap gap-1 px-1"></div>
     </div>
   </aside>
 
   <!-- Main content -->
-  <main class="flex-1 overflow-y-auto flex flex-col">
+  <main class="flex-1 overflow-y-auto flex flex-col min-w-0">
 
     <!-- Search bar -->
-    <div class="p-4 border-b border-slate-800 shrink-0">
+    <div class="px-5 py-4 bg-[#f5f5f7] border-b border-[#e5e7eb] shrink-0">
       <div class="flex gap-2">
         <div class="relative flex-1">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9ca3af]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
           </svg>
-          <input id="search-input" type="text" placeholder="Try: 'seed-stage fintech investors' or 'NYC founders who attended 3+ events'"
-            class="search-box w-full pl-10 pr-4 py-2.5 rounded-xl text-sm"
+          <input id="search-input" type="text"
+            placeholder="Try: 'seed-stage fintech investors' or 'NYC founders at 3+ events'"
+            class="search-box w-full pl-9 pr-4 py-2.5 rounded-xl text-[13px]"
             onkeydown="if(event.key==='Enter') doSearch()" />
-          <span id="ai-badge" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-xs text-indigo-400 bg-indigo-950 border border-indigo-800 px-2 py-0.5 rounded-full">AI</span>
+          <span id="ai-badge" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-[#1d1d1f] bg-[#f3f4f6] border border-[#e5e7eb] px-2 py-0.5 rounded-full font-medium">AI</span>
         </div>
-        <button onclick="doSearch()" class="btn-primary px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2">
-          <span id="search-spinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full spinner"></span>
+        <button onclick="doSearch()" class="btn-primary px-4 py-2.5 rounded-xl text-[13px] font-medium flex items-center gap-2">
+          <span id="search-spinner" class="hidden w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full spinner"></span>
           Search
         </button>
-        <button onclick="clearSearch()" class="btn-ghost px-3 py-2.5 rounded-xl text-sm">Clear</button>
+        <button onclick="clearSearch()" class="btn-ghost px-3 py-2.5 rounded-xl text-[13px] font-medium">Clear</button>
       </div>
-      <div id="search-explanation" class="hidden mt-2 text-xs text-indigo-400 flex items-center gap-1.5">
-        <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+      <div id="search-explanation" class="hidden mt-2 text-[12px] text-[#6b7280] flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 shrink-0 text-[#9ca3af]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
         <span id="explanation-text"></span>
       </div>
     </div>
 
     <!-- Results header -->
-    <div class="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between shrink-0">
-      <span id="results-count" class="text-sm text-slate-400">Loading…</span>
-      <div class="flex items-center gap-2 text-sm text-slate-500">
-        <span>Sort:</span>
-        <select id="sort-select" onchange="applySort()" class="bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1">
+    <div class="px-5 py-2.5 bg-[#f5f5f7] border-b border-[#e5e7eb] flex items-center justify-between shrink-0">
+      <span id="results-count" class="text-[13px] text-[#6b7280]">Loading…</span>
+      <div class="flex items-center gap-2 text-[13px] text-[#6b7280]">
+        <span class="text-[12px]">Sort by</span>
+        <select id="sort-select" onchange="applySort()" class="sort-select text-[12px] rounded-lg px-2 py-1 focus:outline-none">
           <option value="events">Most active</option>
           <option value="name">Name A–Z</option>
           <option value="type">By type</option>
@@ -176,19 +223,22 @@
     </div>
 
     <!-- Results grid -->
-    <div id="results-grid" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 content-start flex-1">
-      <div class="col-span-full flex items-center justify-center py-20 text-slate-500">
+    <div id="results-grid" class="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 content-start flex-1">
+      <div class="col-span-full flex items-center justify-center py-24 text-[#9ca3af]">
         <div class="text-center">
-          <svg class="w-12 h-12 mx-auto mb-3 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
-          <p class="text-sm">Import your CSVs to get started</p>
-          <button onclick="openIngestModal()" class="mt-3 btn-primary text-xs px-4 py-2 rounded-lg">Import CSVs</button>
+          <div class="w-14 h-14 rounded-2xl bg-white border border-[#e5e7eb] flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <svg class="w-7 h-7 text-[#d1d5db]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+          </div>
+          <p class="text-[14px] font-medium text-[#374151] mb-1">No members yet</p>
+          <p class="text-[13px] text-[#9ca3af] mb-4">Import your CSV files to get started</p>
+          <button onclick="openIngestModal()" class="btn-primary text-[13px] px-5 py-2 rounded-xl font-medium">Import CSVs</button>
         </div>
       </div>
     </div>
 
     <!-- Load more -->
-    <div id="load-more-wrap" class="hidden p-4 flex justify-center">
-      <button onclick="loadMore()" class="btn-ghost text-sm px-6 py-2 rounded-xl">Load more</button>
+    <div id="load-more-wrap" class="hidden p-5 flex justify-center">
+      <button onclick="loadMore()" class="btn-ghost text-[13px] px-6 py-2 rounded-xl font-medium">Load more</button>
     </div>
   </main>
 </div>
@@ -204,46 +254,92 @@
 <div id="ingest-modal" class="hidden fixed inset-0 z-50 modal-bg flex items-center justify-center p-4" onclick="if(event.target===this)closeIngestModal()">
   <div class="modal rounded-2xl w-full max-w-md fade-in p-6">
     <div class="flex items-center justify-between mb-5">
-      <h2 class="font-semibold text-white text-lg">Import CSVs</h2>
-      <button onclick="closeIngestModal()" class="text-slate-500 hover:text-white">✕</button>
+      <h2 class="font-semibold text-[#1d1d1f] text-[17px]">Import CSVs</h2>
+      <button onclick="closeIngestModal()" class="w-7 h-7 rounded-full bg-[#f3f4f6] flex items-center justify-center text-[#6b7280] hover:bg-[#e5e7eb] transition-colors text-sm">✕</button>
     </div>
+
+    <!-- Body: upload + start -->
     <div id="ingest-body">
-      <p class="text-sm text-slate-400 mb-4">
-        Place your CSV files in the <code class="bg-slate-800 px-1.5 py-0.5 rounded text-indigo-300 text-xs">data/</code> folder, then click Import.
-        The pipeline will auto-detect columns, deduplicate, and tag every member.
-      </p>
-      <div class="bg-slate-800 rounded-xl p-4 mb-5 text-xs text-slate-400 space-y-1">
-        <p>✓ Handles inconsistent column names across files</p>
-        <p>✓ Merges duplicates by email + fuzzy name matching</p>
-        <p>✓ Auto-tags founders, investors, creators, operators</p>
-        <p>✓ Extracts industry tags (fintech, SaaS, AI/ML, etc.)</p>
+      <!-- Drop zone -->
+      <div id="drop-zone" class="drop-zone rounded-xl p-6 mb-4 text-center cursor-pointer"
+        ondragover="event.preventDefault(); this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="handleDrop(event)"
+        onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" multiple accept=".csv" class="hidden" onchange="handleFileSelect(event)" />
+        <div class="w-10 h-10 rounded-xl bg-[#f3f4f6] flex items-center justify-center mx-auto mb-3">
+          <svg class="w-5 h-5 text-[#9ca3af]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        </div>
+        <p class="text-[13px] font-medium text-[#374151] mb-1">Drop CSV files here</p>
+        <p class="text-[12px] text-[#9ca3af]">or click to browse</p>
       </div>
-      <button onclick="startIngest()" class="btn-primary w-full py-2.5 rounded-xl text-sm font-medium">
+      <div id="file-list" class="mb-4 space-y-1.5 hidden"></div>
+      <div class="bg-[#f9fafb] rounded-xl p-4 mb-5 border border-[#f3f4f6]">
+        <div class="space-y-1.5">
+          <div class="flex items-center gap-2 text-[12px] text-[#6b7280]">
+            <div class="w-4 h-4 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] flex items-center justify-center shrink-0">
+              <svg class="w-2.5 h-2.5 text-[#15803d]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            Handles inconsistent column names across files
+          </div>
+          <div class="flex items-center gap-2 text-[12px] text-[#6b7280]">
+            <div class="w-4 h-4 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] flex items-center justify-center shrink-0">
+              <svg class="w-2.5 h-2.5 text-[#15803d]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            Merges duplicates by email and fuzzy name matching
+          </div>
+          <div class="flex items-center gap-2 text-[12px] text-[#6b7280]">
+            <div class="w-4 h-4 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] flex items-center justify-center shrink-0">
+              <svg class="w-2.5 h-2.5 text-[#15803d]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            Auto-tags founders, investors, creators, operators
+          </div>
+          <div class="flex items-center gap-2 text-[12px] text-[#6b7280]">
+            <div class="w-4 h-4 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] flex items-center justify-center shrink-0">
+              <svg class="w-2.5 h-2.5 text-[#15803d]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            </div>
+            Extracts industry tags — fintech, SaaS, AI/ML, and more
+          </div>
+        </div>
+      </div>
+      <button id="start-btn" onclick="startIngest()" class="btn-primary w-full py-2.5 rounded-xl text-[13px] font-medium">
         Start Import
       </button>
     </div>
+
+    <!-- Progress -->
     <div id="ingest-progress" class="hidden">
-      <div class="mb-3 flex items-center justify-between text-sm">
-        <span id="ingest-step" class="text-slate-300">Starting…</span>
-        <span id="ingest-pct" class="text-slate-500">0%</span>
+      <div class="mb-3 flex items-center justify-between text-[13px]">
+        <span id="ingest-step" class="text-[#374151] font-medium">Starting…</span>
+        <span id="ingest-pct" class="text-[#9ca3af]">0%</span>
       </div>
-      <div class="bg-slate-800 rounded-full h-2 mb-4">
-        <div id="ingest-bar" class="progress-bar h-2 rounded-full" style="width:0%"></div>
+      <div class="progress-track rounded-full h-1.5 mb-4">
+        <div id="ingest-bar" class="progress-bar h-1.5 rounded-full" style="width:0%"></div>
       </div>
-      <p id="ingest-detail" class="text-xs text-slate-500 text-center"></p>
+      <p id="ingest-detail" class="text-[12px] text-[#9ca3af] text-center"></p>
     </div>
+
+    <!-- Result -->
     <div id="ingest-result" class="hidden">
-      <div class="text-center py-4">
-        <div class="text-4xl mb-3">✅</div>
-        <p id="ingest-result-text" class="text-sm text-slate-300"></p>
-        <button onclick="closeIngestModal(); loadStats(); doDefaultSearch();" class="btn-primary mt-4 px-6 py-2 rounded-xl text-sm">View Members</button>
+      <div class="text-center py-6">
+        <div class="w-14 h-14 rounded-2xl bg-[#f0fdf4] border border-[#bbf7d0] flex items-center justify-center mx-auto mb-4">
+          <svg class="w-7 h-7 text-[#15803d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <p class="font-semibold text-[#1d1d1f] text-[16px] mb-1">Import complete</p>
+        <p id="ingest-result-text" class="text-[13px] text-[#6b7280] mb-5"></p>
+        <button onclick="closeIngestModal(); loadStats(); doDefaultSearch();" class="btn-primary px-6 py-2.5 rounded-xl text-[13px] font-medium">View Members</button>
       </div>
     </div>
+
+    <!-- Error -->
     <div id="ingest-error" class="hidden">
-      <div class="text-center py-4">
-        <div class="text-4xl mb-3">❌</div>
-        <p id="ingest-error-text" class="text-sm text-red-400"></p>
-        <button onclick="document.getElementById('ingest-error').classList.add('hidden'); document.getElementById('ingest-body').classList.remove('hidden');" class="btn-ghost mt-4 px-6 py-2 rounded-xl text-sm">Try Again</button>
+      <div class="text-center py-6">
+        <div class="w-14 h-14 rounded-2xl bg-[#fef2f2] border border-[#fecaca] flex items-center justify-center mx-auto mb-4">
+          <svg class="w-7 h-7 text-[#dc2626]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </div>
+        <p class="font-semibold text-[#1d1d1f] text-[16px] mb-1">Import failed</p>
+        <p id="ingest-error-text" class="text-[13px] text-[#dc2626] mb-5"></p>
+        <button onclick="document.getElementById('ingest-error').classList.add('hidden'); document.getElementById('ingest-body').classList.remove('hidden');" class="btn-ghost px-6 py-2.5 rounded-xl text-[13px] font-medium">Try Again</button>
       </div>
     </div>
   </div>
@@ -252,18 +348,13 @@
 <script>
 // ── State ──────────────────────────────────────────────────────────────────
 let state = {
-  query: '',
-  type: 'all',
-  events: 0,
-  hasEmail: false,
-  hasLinkedin: false,
-  tag: null,
-  offset: 0,
-  results: [],
-  total: 0,
-  allResults: [],  // for client-side sort
+  query: '', type: 'all', events: 0,
+  hasEmail: false, hasLinkedin: false,
+  tag: null, offset: 0,
+  results: [], total: 0, allResults: [],
 };
 let ingestPollTimer = null;
+let pendingFiles = [];
 
 // ── Init ───────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
@@ -276,12 +367,14 @@ async function loadStats() {
   const r = await fetch('/api/stats');
   const s = await r.json();
   const bar = document.getElementById('stats-bar');
+  bar.classList.remove('hidden');
   bar.innerHTML = `
-    <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>${(s.total||0).toLocaleString()} members</span>
-    <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full dot-founder"></span>${(s.founders||0).toLocaleString()}</span>
-    <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full dot-investor"></span>${(s.investors||0).toLocaleString()}</span>
-    <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full dot-creator"></span>${(s.creators||0).toLocaleString()}</span>
-    <span class="flex items-center gap-1 text-slate-600">|</span>
+    <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#9ca3af]"></span>${(s.total||0).toLocaleString()} members</span>
+    <span class="text-[#e5e7eb]">·</span>
+    <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full dot-founder"></span>${(s.founders||0).toLocaleString()}</span>
+    <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full dot-investor"></span>${(s.investors||0).toLocaleString()}</span>
+    <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full dot-creator"></span>${(s.creators||0).toLocaleString()}</span>
+    <span class="text-[#e5e7eb]">·</span>
     <span>${(s.events||0)} events</span>
   `;
   document.getElementById('count-all').textContent = (s.total||0).toLocaleString();
@@ -297,8 +390,8 @@ async function loadTags() {
   const tags = await r.json();
   const wrap = document.getElementById('tag-filters');
   wrap.innerHTML = tags.slice(0, 20).map(t => `
-    <button class="filter-chip text-xs px-2 py-0.5 rounded-full" data-tag="${t.tag}" onclick="setTag(this)">
-      ${t.tag} <span class="text-slate-600">${t.count}</span>
+    <button class="filter-chip text-[11px] px-2 py-0.5 rounded-full border border-[#e5e7eb] bg-white hover:bg-[#f3f4f6] text-[#6b7280] transition-colors" data-tag="${t.tag}" onclick="setTag(this)">
+      ${t.tag}
     </button>
   `).join('');
 }
@@ -313,32 +406,23 @@ async function doSearch() {
   state.query = q;
   state.offset = 0;
   state.results = [];
-  if (q) {
-    document.getElementById('ai-badge').classList.remove('hidden');
-  } else {
-    document.getElementById('ai-badge').classList.add('hidden');
-  }
+  document.getElementById('ai-badge').classList.toggle('hidden', !q);
   await performSearch({}, true);
 }
 
 async function performSearch(extra = {}, showSpinner = false) {
-  if (showSpinner) {
-    document.getElementById('search-spinner').classList.remove('hidden');
-  }
+  if (showSpinner) document.getElementById('search-spinner').classList.remove('hidden');
   const payload = {
     query: state.query,
     member_type: state.type === 'all' ? null : state.type,
     tag: state.tag,
     min_events: state.events > 0 ? state.events : null,
     has_email: state.hasEmail || null,
-    limit: 60,
-    offset: state.offset,
-    ...extra
+    limit: 60, offset: state.offset, ...extra
   };
   try {
     const r = await fetch('/api/search', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify(payload)
     });
     const data = await r.json();
@@ -346,7 +430,7 @@ async function performSearch(extra = {}, showSpinner = false) {
     state.total = data.total || 0;
     renderResults(data);
   } catch(e) {
-    document.getElementById('results-count').textContent = 'Search failed — is the server running?';
+    document.getElementById('results-count').textContent = 'Search failed — check server.';
   } finally {
     document.getElementById('search-spinner').classList.add('hidden');
   }
@@ -365,10 +449,9 @@ function renderResults(data) {
   const grid = document.getElementById('results-grid');
   const countEl = document.getElementById('results-count');
   const expl = document.getElementById('search-explanation');
-
   const results = sortResults(data.results || []);
 
-  countEl.textContent = `${(data.total||results.length).toLocaleString()} members found`;
+  countEl.textContent = `${(data.total||results.length).toLocaleString()} members`;
 
   if (data.explanation && state.query) {
     expl.classList.remove('hidden');
@@ -378,10 +461,10 @@ function renderResults(data) {
   }
 
   if (!results.length) {
-    grid.innerHTML = `<div class="col-span-full flex items-center justify-center py-20 text-slate-500">
+    grid.innerHTML = `<div class="col-span-full flex items-center justify-center py-24">
       <div class="text-center">
-        <p class="text-2xl mb-2">🔍</p>
-        <p class="text-sm">No members found. Try a different search.</p>
+        <p class="text-[14px] font-medium text-[#374151] mb-1">No results</p>
+        <p class="text-[13px] text-[#9ca3af]">Try adjusting your search or filters.</p>
       </div>
     </div>`;
     document.getElementById('load-more-wrap').classList.add('hidden');
@@ -396,34 +479,33 @@ function memberCard(m) {
   const type = m.member_type || 'unknown';
   const tags = (m.tags||[]).slice(0,3);
   const eventBadge = m.event_count > 1
-    ? `<span class="text-xs text-slate-500 flex items-center gap-1">
+    ? `<span class="text-[11px] text-[#9ca3af] flex items-center gap-1">
          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/></svg>
-         ${m.event_count} events
+         ${m.event_count}
        </span>` : '';
   const avatar = avatarInitials(m.name||'?');
   const linkedinBtn = m.linkedin
-    ? `<a href="${m.linkedin}" target="_blank" class="text-slate-600 hover:text-blue-400 transition-colors" title="LinkedIn">
-         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+    ? `<a href="${m.linkedin}" target="_blank" class="text-[#d1d5db] hover:text-[#2563eb] transition-colors" title="LinkedIn" onclick="event.stopPropagation()">
+         <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
        </a>` : '';
   const emailBtn = m.email
-    ? `<a href="mailto:${m.email}" class="text-slate-600 hover:text-indigo-400 transition-colors" title="${m.email}">
-         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+    ? `<a href="mailto:${m.email}" class="text-[#d1d5db] hover:text-[#374151] transition-colors" title="${m.email}" onclick="event.stopPropagation()">
+         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
        </a>` : '';
 
-  return `<div class="card rounded-xl p-4 cursor-pointer fade-in" onclick="openMember(${m.id})">
+  return `<div class="card rounded-2xl p-4 cursor-pointer fade-in" onclick="openMember(${m.id})">
     <div class="flex items-start justify-between mb-3">
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0" style="background:${typeColor(type)}">${avatar}</div>
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-semibold text-white shrink-0" style="background:${typeColor(type)}">${avatar}</div>
         <div class="min-w-0">
-          <p class="font-medium text-white text-sm leading-tight truncate">${esc(m.name||'Unknown')}</p>
-          <p class="text-xs text-slate-400 truncate">${esc(m.company||'')}</p>
+          <p class="font-medium text-[#1d1d1f] text-[13px] leading-tight truncate">${esc(m.name||'Unknown')}</p>
+          <p class="text-[11px] text-[#9ca3af] truncate">${esc(m.company||m.title||'')}</p>
         </div>
       </div>
-      <span class="badge-${type} text-xs px-2 py-0.5 rounded-full shrink-0 ml-1 capitalize">${type}</span>
+      <span class="badge-${type} text-[10px] px-2 py-0.5 rounded-full shrink-0 ml-2 font-medium capitalize">${type}</span>
     </div>
-    ${m.title ? `<p class="text-xs text-slate-400 mb-2 truncate">${esc(m.title)}</p>` : ''}
-    ${tags.length ? `<div class="flex flex-wrap gap-1 mb-2">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
-    <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-700/50">
+    ${tags.length ? `<div class="flex flex-wrap gap-1 mb-3">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+    <div class="flex items-center justify-between pt-2 border-t border-[#f3f4f6]">
       ${eventBadge || '<span></span>'}
       <div class="flex items-center gap-2">${linkedinBtn}${emailBtn}</div>
     </div>
@@ -434,7 +516,7 @@ function memberCard(m) {
 async function openMember(id) {
   const modal = document.getElementById('member-modal');
   const content = document.getElementById('modal-content');
-  content.innerHTML = '<div class="text-center py-8 text-slate-500">Loading…</div>';
+  content.innerHTML = '<div class="text-center py-8 text-[#9ca3af] text-[13px]">Loading…</div>';
   modal.classList.remove('hidden');
 
   const r = await fetch(`/api/members/${id}`);
@@ -444,40 +526,40 @@ async function openMember(id) {
   content.innerHTML = `
     <div class="flex items-start justify-between mb-5">
       <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background:${typeColor(type)}">${avatarInitials(m.name||'?')}</div>
+        <div class="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0" style="background:${typeColor(type)}">${avatarInitials(m.name||'?')}</div>
         <div>
-          <h2 class="font-semibold text-white text-lg leading-tight">${esc(m.name||'Unknown')}</h2>
-          <p class="text-sm text-slate-400">${esc([m.title, m.company].filter(Boolean).join(' @ '))}</p>
+          <h2 class="font-semibold text-[#1d1d1f] text-[18px] leading-tight">${esc(m.name||'Unknown')}</h2>
+          <p class="text-[13px] text-[#6b7280]">${esc([m.title, m.company].filter(Boolean).join(' · '))}</p>
         </div>
       </div>
-      <button onclick="closeModal()" class="text-slate-500 hover:text-white text-lg leading-none mt-1">✕</button>
+      <button onclick="closeModal()" class="w-7 h-7 rounded-full bg-[#f3f4f6] flex items-center justify-center text-[#6b7280] hover:bg-[#e5e7eb] transition-colors text-sm shrink-0 mt-0.5">✕</button>
     </div>
-    <div class="flex items-center gap-2 mb-5">
-      <span class="badge-${type} text-xs px-2.5 py-1 rounded-full capitalize">${type}</span>
-      ${m.event_count > 0 ? `<span class="text-xs text-slate-500 border border-slate-700 px-2.5 py-1 rounded-full">${m.event_count} event${m.event_count!==1?'s':''}</span>` : ''}
+    <div class="flex items-center gap-2 mb-5 flex-wrap">
+      <span class="badge-${type} text-[11px] px-2.5 py-1 rounded-full capitalize font-medium">${type}</span>
+      ${m.event_count > 0 ? `<span class="text-[11px] text-[#6b7280] bg-[#f9fafb] border border-[#f3f4f6] px-2.5 py-1 rounded-full">${m.event_count} event${m.event_count!==1?'s':''}</span>` : ''}
     </div>
-    ${m.bio ? `<p class="text-sm text-slate-300 mb-5 leading-relaxed">${esc(m.bio)}</p>` : ''}
-    <div class="grid grid-cols-2 gap-3 mb-5">
-      ${field('Email', m.email ? `<a href="mailto:${m.email}" class="text-indigo-400 hover:underline">${esc(m.email)}</a>` : null)}
+    ${m.bio ? `<p class="text-[13px] text-[#374151] mb-5 leading-relaxed">${esc(m.bio)}</p>` : ''}
+    <div class="grid grid-cols-2 gap-2 mb-5">
+      ${field('Email', m.email ? `<a href="mailto:${m.email}" class="text-[#1d1d1f] hover:underline">${esc(m.email)}</a>` : null)}
       ${field('Location', m.location)}
       ${field('Company', m.company)}
       ${field('Title', m.title)}
-      ${field('LinkedIn', m.linkedin ? `<a href="${m.linkedin}" target="_blank" class="text-blue-400 hover:underline truncate block">View profile →</a>` : null)}
-      ${field('Twitter', m.twitter ? `<a href="https://twitter.com/${m.twitter.replace('@','')}" target="_blank" class="text-sky-400 hover:underline">@${m.twitter.replace('@','')}</a>` : null)}
-      ${field('Website', m.website ? `<a href="${m.website}" target="_blank" class="text-indigo-400 hover:underline truncate block">${esc(m.website)}</a>` : null)}
+      ${field('LinkedIn', m.linkedin ? `<a href="${m.linkedin}" target="_blank" class="text-[#2563eb] hover:underline">View profile →</a>` : null)}
+      ${field('Twitter', m.twitter ? `<a href="https://twitter.com/${m.twitter.replace('@','')}" target="_blank" class="text-[#0ea5e9] hover:underline">@${m.twitter.replace('@','')}</a>` : null)}
+      ${field('Website', m.website ? `<a href="${m.website}" target="_blank" class="text-[#1d1d1f] hover:underline truncate block">${esc(m.website)}</a>` : null)}
     </div>
     ${(m.tags||[]).length ? `
     <div class="mb-5">
-      <p class="text-xs text-slate-500 mb-2 uppercase tracking-wider font-semibold">Tags</p>
+      <p class="text-[11px] text-[#9ca3af] mb-2 uppercase tracking-widest font-semibold">Tags</p>
       <div class="flex flex-wrap gap-1.5">${(m.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
     </div>` : ''}
     ${(m.events||[]).length ? `
     <div>
-      <p class="text-xs text-slate-500 mb-2 uppercase tracking-wider font-semibold">Events attended</p>
-      <div class="space-y-1">${(m.events||[]).map(e=>`
-        <div class="text-xs text-slate-400 flex items-center gap-2">
-          <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>
-          ${esc(e.name)} ${e.date ? `<span class="text-slate-600">${e.date}</span>` : ''}
+      <p class="text-[11px] text-[#9ca3af] mb-2 uppercase tracking-widest font-semibold">Events attended</p>
+      <div class="space-y-1.5">${(m.events||[]).map(e=>`
+        <div class="text-[12px] text-[#374151] flex items-center gap-2">
+          <span class="w-1 h-1 rounded-full bg-[#d1d5db] shrink-0"></span>
+          ${esc(e.name)} ${e.date ? `<span class="text-[#9ca3af]">${e.date}</span>` : ''}
         </div>`).join('')}
       </div>
     </div>` : ''}
@@ -490,9 +572,9 @@ function closeModal() {
 
 function field(label, value) {
   if (!value) return '';
-  return `<div class="bg-slate-800/50 rounded-lg p-2.5">
-    <p class="text-xs text-slate-500 mb-0.5">${label}</p>
-    <div class="text-sm text-slate-200 truncate">${value}</div>
+  return `<div class="field-box">
+    <p class="text-[10px] text-[#9ca3af] mb-0.5 uppercase tracking-wider font-semibold">${label}</p>
+    <div class="text-[12px] text-[#374151] truncate">${value}</div>
   </div>`;
 }
 
@@ -516,12 +598,8 @@ function setEvents(btn) {
 function setTag(btn) {
   const isActive = btn.classList.contains('active');
   document.querySelectorAll('[data-tag]').forEach(b => b.classList.remove('active'));
-  if (!isActive) {
-    btn.classList.add('active');
-    state.tag = btn.dataset.tag;
-  } else {
-    state.tag = null;
-  }
+  if (!isActive) { btn.classList.add('active'); state.tag = btn.dataset.tag; }
+  else state.tag = null;
   state.offset = 0;
   performSearch();
 }
@@ -535,7 +613,6 @@ function toggleEmail() {
 function toggleLinkedin() {
   state.hasLinkedin = !state.hasLinkedin;
   document.getElementById('btn-has-linkedin').classList.toggle('active', state.hasLinkedin);
-  // Pass linkedin filter via extra
   performSearch({has_linkedin: state.hasLinkedin || null});
 }
 
@@ -557,6 +634,39 @@ function loadMore() {
   performSearch();
 }
 
+// ── File upload handling ───────────────────────────────────────────────────
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag-over');
+  const files = [...e.dataTransfer.files].filter(f => f.name.toLowerCase().endsWith('.csv'));
+  addFiles(files);
+}
+
+function handleFileSelect(e) {
+  const files = [...e.target.files];
+  addFiles(files);
+}
+
+function addFiles(files) {
+  pendingFiles = [...pendingFiles, ...files];
+  renderFileList();
+}
+
+function renderFileList() {
+  const wrap = document.getElementById('file-list');
+  if (!pendingFiles.length) { wrap.classList.add('hidden'); return; }
+  wrap.classList.remove('hidden');
+  wrap.innerHTML = pendingFiles.map((f, i) => `
+    <div class="flex items-center justify-between bg-[#f9fafb] border border-[#f3f4f6] rounded-lg px-3 py-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <svg class="w-3.5 h-3.5 text-[#9ca3af] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span class="text-[12px] text-[#374151] truncate">${esc(f.name)}</span>
+      </div>
+      <span class="text-[11px] text-[#9ca3af] ml-2 shrink-0">${(f.size/1024).toFixed(0)}kb</span>
+    </div>
+  `).join('');
+}
+
 // ── Ingest modal ───────────────────────────────────────────────────────────
 function openIngestModal() {
   document.getElementById('ingest-modal').classList.remove('hidden');
@@ -571,9 +681,30 @@ function closeIngestModal() {
 }
 
 async function startIngest() {
+  if (pendingFiles.length > 0) {
+    // Upload files first
+    const btn = document.getElementById('start-btn');
+    btn.textContent = `Uploading ${pendingFiles.length} file${pendingFiles.length!==1?'s':''}…`;
+    btn.disabled = true;
+    const fd = new FormData();
+    pendingFiles.forEach(f => fd.append('files', f));
+    try {
+      const r = await fetch('/api/upload', { method: 'POST', body: fd });
+      const res = await r.json();
+      if (res.errors && res.errors.length) console.warn('Upload errors:', res.errors);
+    } catch(e) {
+      document.getElementById('ingest-body').classList.add('hidden');
+      document.getElementById('ingest-error').classList.remove('hidden');
+      document.getElementById('ingest-error-text').textContent = 'Upload failed: ' + e.message;
+      return;
+    }
+    pendingFiles = [];
+    renderFileList();
+    btn.disabled = false;
+  }
+
   document.getElementById('ingest-body').classList.add('hidden');
   document.getElementById('ingest-progress').classList.remove('hidden');
-
   await fetch('/api/ingest/start', { method: 'POST' });
   ingestPollTimer = setInterval(pollIngest, 800);
 }
@@ -581,7 +712,6 @@ async function startIngest() {
 async function pollIngest() {
   const r = await fetch('/api/ingest/status');
   const s = await r.json();
-
   const pct = s.total > 0 ? Math.round(s.current / s.total * 100) : 0;
   document.getElementById('ingest-step').textContent = s.step || 'Processing…';
   document.getElementById('ingest-pct').textContent = `${pct}%`;
@@ -599,7 +729,7 @@ async function pollIngest() {
       document.getElementById('ingest-result').classList.remove('hidden');
       const res = s.result;
       document.getElementById('ingest-result-text').textContent =
-        `Imported ${(res.unique_members||0).toLocaleString()} members from ${res.files_processed||0} files.`;
+        `${(res.unique_members||0).toLocaleString()} members imported from ${res.files_processed||0} files.`;
     }
   }
 }
@@ -623,7 +753,7 @@ function avatarInitials(name) {
   return name.split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase() || '?';
 }
 function typeColor(type) {
-  return {founder:'#2563eb',investor:'#059669',creator:'#7c3aed',operator:'#d97706',other:'#4b5563',unknown:'#1e293b'}[type]||'#4b5563';
+  return {founder:'#2563eb',investor:'#16a34a',creator:'#7c3aed',operator:'#d97706',other:'#6b7280',unknown:'#d1d5db'}[type]||'#9ca3af';
 }
 </script>
 </body>
