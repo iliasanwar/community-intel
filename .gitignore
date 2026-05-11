@@ -1,0 +1,23 @@
+# Database
+*.db
+*.db-wal
+*.db-shm
+
+# Environment
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Data files (upload your CSVs via the web UI after deploy)
+data/*.csv
+data/*.CSV
+
+# OS
+.DS_Store
+Thumbs.db
