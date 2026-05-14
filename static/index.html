@@ -99,6 +99,11 @@
   </div>
   <div class="flex items-center gap-2">
     <div id="stats-bar" class="hidden sm:flex gap-4 text-[13px] text-[#6b7280] mr-2"></div>
+    <!-- View toggle -->
+    <div class="flex items-center bg-[#f3f4f6] rounded-lg p-0.5 mr-1">
+      <button id="view-members-btn" onclick="showMembersView()" class="text-[13px] px-3 py-1 rounded-md font-medium transition-all bg-white shadow-sm text-[#1d1d1f]">Members</button>
+      <button id="view-files-btn" onclick="showFilesView()" class="text-[13px] px-3 py-1 rounded-md font-medium transition-all text-[#6b7280]">Files</button>
+    </div>
     <button onclick="openIngestModal()" class="btn-ghost text-[13px] px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium">
       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
       Import
@@ -112,7 +117,7 @@
 </header>
 
 <!-- ── Main layout ────────────────────────────────────────────────────────── -->
-<div class="flex flex-1 overflow-hidden">
+<div id="main-layout" class="flex flex-1 overflow-hidden">
 
   <!-- Sidebar -->
   <aside class="sidebar w-52 shrink-0 overflow-y-auto py-5 px-3 flex flex-col gap-6">
@@ -241,6 +246,61 @@
       <button onclick="loadMore()" class="btn-ghost text-[13px] px-6 py-2 rounded-xl font-medium">Load more</button>
     </div>
   </main>
+</div>
+
+<!-- ── Files gallery view ─────────────────────────────────────────────────── -->
+<div id="files-view" class="hidden flex-1 overflow-y-auto bg-[#f5f5f7]">
+  <div class="max-w-6xl mx-auto px-6 py-8">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="font-semibold text-[#1d1d1f] text-[22px] tracking-tight">Uploaded Files</h1>
+        <p class="text-[13px] text-[#9ca3af] mt-0.5">All CSV files in your data directory</p>
+      </div>
+      <button onclick="openIngestModal()" class="btn-primary text-[13px] px-4 py-2 rounded-xl font-medium flex items-center gap-2">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Upload CSV
+      </button>
+    </div>
+    <div id="files-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      <div class="col-span-full text-center py-20 text-[#9ca3af]">
+        <div class="w-12 h-12 rounded-2xl bg-white border border-[#e5e7eb] flex items-center justify-center mx-auto mb-3 shadow-sm">
+          <svg class="w-6 h-6 text-[#d1d5db]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <p class="text-[13px] text-[#374151] font-medium mb-1">No files yet</p>
+        <p class="text-[12px]">Upload a CSV to get started</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CSV viewer modal ───────────────────────────────────────────────────── -->
+<div id="csv-viewer-modal" class="hidden fixed inset-0 z-50 modal-bg flex flex-col" onclick="if(event.target===this)closeCsvViewer()">
+  <div class="modal rounded-2xl flex flex-col m-4 mt-10 fade-in" style="max-height:calc(100vh - 80px); overflow:hidden;">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[#e5e7eb] shrink-0">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-8 h-8 rounded-lg bg-[#f3f4f6] flex items-center justify-center shrink-0">
+          <svg class="w-4 h-4 text-[#6b7280]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <div class="min-w-0">
+          <h2 id="csv-viewer-title" class="font-semibold text-[#1d1d1f] text-[15px] truncate"></h2>
+          <p id="csv-viewer-meta" class="text-[12px] text-[#9ca3af]"></p>
+        </div>
+      </div>
+      <button onclick="closeCsvViewer()" class="w-7 h-7 rounded-full bg-[#f3f4f6] flex items-center justify-center text-[#6b7280] hover:bg-[#e5e7eb] transition-colors text-sm shrink-0 ml-4">✕</button>
+    </div>
+    <!-- Table -->
+    <div id="csv-table-wrap" class="flex-1 overflow-auto">
+      <div id="csv-loading" class="flex items-center justify-center py-20 text-[#9ca3af] text-[13px]">
+        <span class="w-5 h-5 border-2 border-[#e5e7eb] border-t-[#9ca3af] rounded-full spinner mr-2"></span>
+        Loading…
+      </div>
+      <table id="csv-table" class="hidden w-full text-[12px] border-collapse">
+        <thead id="csv-thead" class="sticky top-0 bg-[#f9fafb] border-b border-[#e5e7eb]"></thead>
+        <tbody id="csv-tbody" class="divide-y divide-[#f3f4f6]"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <!-- ── Member detail modal ────────────────────────────────────────────────── -->
@@ -763,6 +823,141 @@ function avatarInitials(name) {
 }
 function typeColor(type) {
   return {founder:'#2563eb',investor:'#16a34a',creator:'#7c3aed',operator:'#d97706',other:'#6b7280',unknown:'#d1d5db'}[type]||'#9ca3af';
+}
+
+// ── View switching ─────────────────────────────────────────────────────────
+function showMembersView() {
+  document.getElementById('main-layout').classList.remove('hidden');
+  document.getElementById('main-layout').style.display = '';
+  document.getElementById('files-view').classList.add('hidden');
+  document.getElementById('view-members-btn').classList.add('bg-white','shadow-sm','text-[#1d1d1f]');
+  document.getElementById('view-members-btn').classList.remove('text-[#6b7280]');
+  document.getElementById('view-files-btn').classList.remove('bg-white','shadow-sm','text-[#1d1d1f]');
+  document.getElementById('view-files-btn').classList.add('text-[#6b7280]');
+}
+
+function showFilesView() {
+  document.getElementById('main-layout').classList.add('hidden');
+  document.getElementById('files-view').classList.remove('hidden');
+  document.getElementById('files-view').classList.add('flex');
+  document.getElementById('view-files-btn').classList.add('bg-white','shadow-sm','text-[#1d1d1f]');
+  document.getElementById('view-files-btn').classList.remove('text-[#6b7280]');
+  document.getElementById('view-members-btn').classList.remove('bg-white','shadow-sm','text-[#1d1d1f]');
+  document.getElementById('view-members-btn').classList.add('text-[#6b7280]');
+  loadFiles();
+}
+
+// ── Files gallery ──────────────────────────────────────────────────────────
+async function loadFiles() {
+  const grid = document.getElementById('files-grid');
+  grid.innerHTML = '<div class="col-span-full flex justify-center py-16 text-[#9ca3af] text-[13px]"><span class="w-5 h-5 border-2 border-[#e5e7eb] border-t-[#9ca3af] rounded-full spinner mr-2"></span>Loading…</div>';
+  try {
+    const r = await fetch('/api/upload/list');
+    const files = await r.json();
+    if (!files.length) {
+      grid.innerHTML = `<div class="col-span-full text-center py-20 text-[#9ca3af]">
+        <div class="w-12 h-12 rounded-2xl bg-white border border-[#e5e7eb] flex items-center justify-center mx-auto mb-3 shadow-sm">
+          <svg class="w-6 h-6 text-[#d1d5db]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <p class="text-[13px] text-[#374151] font-medium mb-1">No files yet</p>
+        <p class="text-[12px]">Upload a CSV using the Import button</p>
+      </div>`;
+      return;
+    }
+    grid.innerHTML = files.map(f => fileCard(f)).join('');
+  } catch(e) {
+    grid.innerHTML = `<div class="col-span-full text-center py-16 text-[#dc2626] text-[13px]">Failed to load files.</div>`;
+  }
+}
+
+function fileCard(f) {
+  const d = new Date(f.modified * 1000);
+  const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const rows = (f.row_count || 0).toLocaleString();
+  const size = f.size_kb < 1000 ? `${f.size_kb} KB` : `${(f.size_kb/1024).toFixed(1)} MB`;
+  return `
+  <div class="card rounded-2xl p-4 cursor-pointer fade-in group relative" onclick="openCsvViewer('${esc(f.name)}')">
+    <div class="flex items-start justify-between mb-3">
+      <div class="w-10 h-10 rounded-xl bg-[#f3f4f6] flex items-center justify-center shrink-0">
+        <svg class="w-5 h-5 text-[#6b7280]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <button onclick="event.stopPropagation(); confirmDelete('${esc(f.name)}')"
+        class="opacity-0 group-hover:opacity-100 transition-opacity w-7 h-7 rounded-full bg-[#fef2f2] flex items-center justify-center text-[#dc2626] hover:bg-[#fee2e2] shrink-0"
+        title="Delete file">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+      </button>
+    </div>
+    <p class="font-medium text-[#1d1d1f] text-[13px] leading-tight truncate mb-1" title="${esc(f.name)}">${esc(f.name)}</p>
+    <p class="text-[11px] text-[#9ca3af] mb-3">${rows} rows · ${size}</p>
+    <div class="flex items-center justify-between pt-2.5 border-t border-[#f3f4f6]">
+      <span class="text-[11px] text-[#9ca3af]">${dateStr}</span>
+      <span class="text-[11px] text-[#2563eb] font-medium group-hover:underline">View →</span>
+    </div>
+  </div>`;
+}
+
+async function confirmDelete(filename) {
+  if (!confirm(`Delete "${filename}"?\n\nThis only removes the raw file. Imported members are not affected.`)) return;
+  try {
+    const r = await fetch(`/api/upload/${encodeURIComponent(filename)}`, { method: 'DELETE' });
+    if (r.ok) {
+      loadFiles();
+    } else {
+      const e = await r.json();
+      alert('Delete failed: ' + (e.detail || 'Unknown error'));
+    }
+  } catch(e) {
+    alert('Delete failed: ' + e.message);
+  }
+}
+
+// ── CSV viewer ─────────────────────────────────────────────────────────────
+async function openCsvViewer(filename) {
+  const modal = document.getElementById('csv-viewer-modal');
+  const loading = document.getElementById('csv-loading');
+  const table = document.getElementById('csv-table');
+  const thead = document.getElementById('csv-thead');
+  const tbody = document.getElementById('csv-tbody');
+  const title = document.getElementById('csv-viewer-title');
+  const meta = document.getElementById('csv-viewer-meta');
+
+  title.textContent = filename;
+  meta.textContent = 'Loading…';
+  loading.classList.remove('hidden');
+  table.classList.add('hidden');
+  modal.classList.remove('hidden');
+
+  try {
+    const r = await fetch(`/api/upload/${encodeURIComponent(filename)}/preview?limit=500`);
+    if (!r.ok) throw new Error((await r.json()).detail || 'Failed to load');
+    const data = await r.json();
+
+    meta.textContent = `${data.total_rows.toLocaleString()} rows · ${data.columns.length} columns`;
+
+    // Build header
+    thead.innerHTML = `<tr>${data.columns.map(c =>
+      `<th class="text-left text-[11px] font-semibold text-[#6b7280] uppercase tracking-wider px-4 py-2.5 whitespace-nowrap">${esc(c)}</th>`
+    ).join('')}</tr>`;
+
+    // Build rows
+    tbody.innerHTML = data.rows.map((row, i) =>
+      `<tr class="${i % 2 === 0 ? 'bg-white' : 'bg-[#fafafa]'} hover:bg-[#f0f9ff] transition-colors">
+        ${data.columns.map(c => `<td class="px-4 py-2 text-[#374151] whitespace-nowrap max-w-[220px] overflow-hidden text-ellipsis" title="${esc(row[c]||'')}">${esc(row[c]||'')}</td>`).join('')}
+      </tr>`
+    ).join('');
+
+    loading.classList.add('hidden');
+    table.classList.remove('hidden');
+  } catch(e) {
+    loading.innerHTML = `<div class="text-center text-[#dc2626] text-[13px]">${esc(e.message)}</div>`;
+  }
+}
+
+function closeCsvViewer() {
+  document.getElementById('csv-viewer-modal').classList.add('hidden');
+  document.getElementById('csv-table').classList.add('hidden');
+  document.getElementById('csv-loading').classList.remove('hidden');
+  document.getElementById('csv-loading').innerHTML = '<span class="w-5 h-5 border-2 border-[#e5e7eb] border-t-[#9ca3af] rounded-full spinner mr-2"></span>Loading…';
 }
 </script>
 </body>

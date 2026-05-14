@@ -214,8 +214,47 @@ def list_uploads():
     """List CSV files currently in the data directory."""
     files = []
     for p in sorted(DATA_DIR.glob("*.csv")) + sorted(DATA_DIR.glob("*.CSV")):
-        files.append({"name": p.name, "size_kb": round(p.stat().st_size / 1024, 1)})
+        stat = p.stat()
+        # Count rows quickly (line count minus header)
+        try:
+            with open(p, "rb") as f:
+                row_count = max(0, sum(1 for _ in f) - 1)
+        except Exception:
+            row_count = 0
+        files.append({
+            "name": p.name,
+            "size_kb": round(stat.st_size / 1024, 1),
+            "row_count": row_count,
+            "modified": stat.st_mtime,
+        })
     return files
+
+
+@app.get("/api/upload/{filename}/preview")
+def preview_csv(filename: str, limit: int = Query(default=500, le=5000)):
+    """Return columns + rows of a CSV file for preview."""
+    import chardet, pandas as pd
+    p = DATA_DIR / Path(filename).name
+    if not p.exists() or p.suffix.lower() != ".csv":
+        raise HTTPException(status_code=404, detail="File not found")
+    try:
+        raw = p.read_bytes()[:20_000]
+        enc = chardet.detect(raw).get("encoding") or "utf-8"
+        sample = p.read_text(encoding=enc, errors="replace")[:3000]
+        counts = {d: sample.count(d) for d in [",", ";", "\t", "|"]}
+        delim = max(counts, key=counts.get)
+        df = pd.read_csv(p, encoding=enc, sep=delim, dtype=str,
+                         on_bad_lines="skip", nrows=limit)
+        df = df.fillna("").apply(lambda col: col.str.strip())
+        df = df.loc[:, df.any()]
+        return {
+            "name": p.name,
+            "columns": list(df.columns),
+            "rows": df.head(limit).to_dict("records"),
+            "total_rows": len(df),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.delete("/api/upload/{filename}")
